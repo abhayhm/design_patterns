@@ -65,14 +65,18 @@ public:
     const int totalSpace = 15;
 };
 
-class VirtualDriveAdapter: private VirtualDrive, public CloudDrive{
+class VirtualDriveAdapter: public CloudDrive{
+private:
+    unique_ptr<VirtualDrive> vDrive;
 public:
+    VirtualDriveAdapter(): vDrive(make_unique<VirtualDrive>()) {}
+
     bool uploadContents(const string &content){
         cout << "Uploading " << content.length() << " bytes to VirtualDrive: " << endl;
-        return uploadData(content, rand() % 999);
+        return vDrive->uploadData(content, rand() % 999);
     }
     int getFreeSpace(){
-        int freeSpace = totalSpace - usedSpace();
+        int freeSpace = vDrive->totalSpace - vDrive->usedSpace();
         cout << "Available VirtualDrive storage: " << freeSpace << "GB" << endl;
         return freeSpace;
     }
