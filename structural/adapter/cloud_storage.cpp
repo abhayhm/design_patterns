@@ -26,7 +26,7 @@ public:
     int getFreeSpace() override
     {
         // Implement the logic for getting the free space on CloudDrive here.
-        const int size = arc4random_uniform(20);
+        const int size = rand() % 20;
         cout << "Available CloudDrive storage: " << size << "GB" << endl;
         return size;
     }
@@ -43,7 +43,7 @@ public:
 
     int getFreeSpace() override
     {
-        const int size = arc4random_uniform(10);
+        const int size = rand() % 10;
         cout << "Available FastShare storage: " << size << "GB" << endl;
         return size;
     }
@@ -60,9 +60,22 @@ public:
     }
     int usedSpace()
     {
-        return arc4random_uniform(10);
+        return rand() % 10;
     }
     const int totalSpace = 15;
+};
+
+class VirtualDriveAdapter: private VirtualDrive, public CloudDrive{
+public:
+    bool uploadContents(const string &content){
+        cout << "Uploading " << content.length() << " bytes to VirtualDrive: " << endl;
+        return uploadData(content, rand() % 999);
+    }
+    int getFreeSpace(){
+        int freeSpace = totalSpace - usedSpace();
+        cout << "Available VirtualDrive storage: " << freeSpace << "GB" << endl;
+        return freeSpace;
+    }
 };
 
 int main()
@@ -72,6 +85,7 @@ int main()
     {
         std::make_unique<CloudDrive>(),
         std::make_unique<FastShare>(),
+        std::make_unique<VirtualDriveAdapter>()
     };
 
     // Iterate through the array and invoke the uploadContents and getFreeSpace
