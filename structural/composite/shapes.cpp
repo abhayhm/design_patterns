@@ -10,7 +10,7 @@ public:
 
 class CompositeShape: public Shape{
 private:
-    std::vector<const Shape&> shapes;
+    std::vector<Shape*> shapes;
 
 public:
     virtual void draw() const override{
@@ -19,13 +19,9 @@ public:
             shape->draw();
         }
     }
-    void add_shape(const Shape& shape){
-        shapes.push_back(shape);
+    void add_shape(Shape& shape){
+        shapes.push_back(&shape);
     }
-};
-
-class Triangle: public Shape{
-
 };
 
 class Rectangle: public Shape{
@@ -33,18 +29,32 @@ private:
     int length;
     int breadth;
 public:
+    Rectangle(int l, int b): length(l), breadth(b) {}
 
+    virtual void draw() const override{
+        std::cout<<"Drawing rectangle with length "<<length<<" breadth "<<breadth<<std::endl;
+    }
 };
 
 class Circle: public Shape{
 private:
     int radius;
 public:
-    Circle(int& r){
-        radius = r;
-    }
+    Circle(int r): radius(r){}
     
     virtual void draw() const override{
         std::cout<<"Drawing circle with radius "<<radius<<std::endl;
     }
 };
+
+int main(){
+    Circle c(5);
+    Rectangle r(10, 15);
+
+    CompositeShape cs;
+    cs.add_shape(c);
+    cs.add_shape(r);
+    cs.draw();
+
+    return 0;
+}
